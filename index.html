@@ -231,7 +231,7 @@
 <body>
   <section class="slide active">
     <div class="content">
-      <h1>beekeeper</h1>
+      <h1>Beekeeper</h1>
       <p class="subtitle">beekeeper is the control tower for Bee test clusters. It creates clusters and runs health checks so we can quickly see if the network is working.</p>
       <div class="stats">
         <div class="stat"><div class="n">12</div><div class="l">cli command groups</div></div>
@@ -241,7 +241,7 @@
       </div>
       <div class="grid-2" style="margin-top:18px;">
         <div class="card">
-          <h3>top things beekeeper can do</h3>
+          <h3>Top things beekeeper can do</h3>
           <div class="point-grid">
             <div class="point">Create and delete Bee clusters from config profiles.</div>
             <div class="point">Run multiple check types for connectivity, sync, retrieval, postage, settlements, and stake/withdraw flows.</div>
@@ -250,7 +250,7 @@
           </div>
         </div>
         <div class="card">
-          <h3>where this comes from</h3>
+          <h3>Where this comes from</h3>
           <div class="point-grid">
             <div class="point">Main command wiring in <span class="mono">cmd/beekeeper/cmd</span>.</div>
             <div class="point">Cluster lifecycle in <span class="mono">cmd/beekeeper/cmd/cluster.go</span>.</div>
@@ -266,10 +266,10 @@
 
   <section class="slide centered">
     <div class="content">
-      <h2>1) command entry and config loading</h2>
+      <h2>1) Command entry and config loading</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>startup path</h3>
+          <h3>Startup path</h3>
           <ul>
             <li>Root command <span class="mono">beekeeper</span> initializes all subcommands.</li>
             <li>Persistent pre-run calls config init before command execution.</li>
@@ -278,7 +278,7 @@
           </ul>
         </div>
         <div class="card">
-          <h3>example full command</h3>
+          <h3>Example full command</h3>
           <ul>
             <li>Use this to create an autotls local cluster with verbose logs:</li>
             <li><span class="mono">./dist/beekeeper create bee-cluster --cluster-name=local-dns-autotls --log-verbosity=debug</span></li>
@@ -290,7 +290,7 @@
 
   <section class="slide centered">
     <div class="content">
-      <h2>2) cluster setup lifecycle</h2>
+      <h2>2) Cluster setup lifecycle</h2>
       <div class="flow">
         <div class="step"><strong>step 1:</strong> validate cluster name and config profile lookup.</div>
         <div class="step"><strong>step 2:</strong> if starting a new cluster, require <span class="mono">--geth-url</span> and <span class="mono">--wallet-key</span>.</div>
@@ -304,10 +304,10 @@
 
   <section class="slide centered">
     <div class="content">
-      <h2>3) top commands you will use most</h2>
+      <h2>3) Top commands you will use most</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>daily operations commands</h3>
+          <h3>Daily operations commands</h3>
           <ul>
             <li><span class="mono">create bee-cluster</span>: start cluster from config profile.</li>
             <li><span class="mono">delete bee-cluster</span>: remove cluster resources.</li>
@@ -317,7 +317,7 @@
           </ul>
         </div>
         <div class="card">
-          <h3>funding and verification commands</h3>
+          <h3>Funding and verification commands</h3>
           <ul>
             <li><span class="mono">fund</span>: fund cluster wallets for ETH/BZZ needs.</li>
             <li><span class="mono">node-funder</span>: periodic top-up by address/namespace/cluster.</li>
@@ -333,10 +333,10 @@
 
   <section class="slide centered">
     <div class="content">
-      <h2>4) bee ci workflow when a PR is open</h2>
+      <h2>4) Bee ci workflow when a PR is open</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>how it works in practice</h3>
+          <h3>How it works in practice</h3>
           <ul>
             <li>For Bee PRs, CI runs workflows that include beekeeper-based integration checks.</li>
             <li>A common path is the Bee workflow file <span class="mono">.github/workflows/beekeeper.yml</span>.</li>
@@ -345,7 +345,7 @@
           </ul>
         </div>
         <div class="card">
-          <h3>example</h3>
+          <h3>Example</h3>
           <ul>
             <li>PR <a href="https://github.com/ethersphere/bee/pull/5350" target="_blank" style="color:#8bc7ff;">ethersphere/bee#5350</a> adds AutoTLS integration coverage in beekeeper workflow.</li>
             <li>It extends CI flow with a dedicated AutoTLS cluster test path and artifact handling.</li>
@@ -358,10 +358,10 @@
 
   <section class="slide centered">
     <div class="content">
-      <h2>5) how we use beekeeper day to day</h2>
+      <h2>5) How we use beekeeper day to day</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>where it runs</h3>
+          <h3>Where it runs</h3>
           <ul>
             <li><strong style="color:var(--text)">local dev:</strong> with beelocal environments (k3d/k3s style local clusters) for quick iteration.</li>
             <li><strong style="color:var(--text)">ci:</strong> Bee PR workflows run beekeeper checks to catch regressions before merge.</li>
@@ -370,7 +370,7 @@
           </ul>
         </div>
         <div class="card">
-          <h3>how it is operated</h3>
+          <h3>How it is operated</h3>
           <ul>
             <li><strong style="color:var(--text)">interactive runs:</strong> operators trigger one-off checks and restarts from CLI.</li>
             <li><strong style="color:var(--text)">job mode:</strong> deploy beekeeper as a Kubernetes job for single-run checks.</li>
@@ -384,10 +384,10 @@
 
   <section class="slide centered">
     <div class="content centered">
-      <h2>6) metrics and dashboard visibility</h2>
+      <h2>6) Metrics and dashboard visibility</h2>
       <div class="grid-2">
         <div class="card">
-          <h3>what metrics path exists in code</h3>
+          <h3>What metrics path exists in code</h3>
           <ul>
             <li><span class="mono">check</span> command can enable metrics and push to pushgateway.</li>
             <li>Check actions and logger can register collectors through metrics middleware.</li>
@@ -395,7 +395,7 @@
           </ul>
         </div>
         <div class="card">
-          <h3>grafana example</h3>
+          <h3>Grafana example</h3>
           <ul>
             <li>Smoke check performance dashboard for beekeeper runs:</li>
             <li><a href="https://grafana.proxy.ethswarm.org/d/smoke-check-perf/beekeeper-smoke-check-performance?var-interval=$__auto&amp;orgId=1&amp;from=now-3d&amp;to=now&amp;timezone=browser&amp;var-datasource=default&amp;var-cluster=swarm1&amp;var-job=bee-light-testnet&amp;var-size=$__all&amp;var-redundancy=$__all" target="_blank" style="color:#8bc7ff;">beekeeper smoke check performance</a></li>
@@ -408,12 +408,12 @@
 
   <section class="slide centered">
     <div class="content">
-      <h2>7) takeaway</h2>
+      <h2>7) Takeaway</h2>
       <div class="card">
         <ul>
           <li><strong style="color:var(--text)">what it is:</strong> beekeeper is the operations cockpit for Bee test clusters, combining lifecycle actions and validation checks in one toolchain.</li>
           <li><strong style="color:var(--text)">most important flow:</strong> choose config source (local or git), create or attach to cluster, run checks, and read outcomes in CI + metrics dashboards.</li>
-          <li><strong style="color:var(--text)">commands that matter most:</strong> <span class="mono">check</span>, <span class="mono">restart</span>, <span class="mono">fund</span>, <span class="mono">node-funder</span>, <span class="mono">stamper</span>, <span class="mono">print</span>, and <span class="mono">nuke</span>.</li>
+          <li><strong style="color:var(--text)">commands that matter most:</strong> <span class="mono">check</span>, <span class="mono">restart</span>, <span class="mono">fund</span>, <span class="mono">stamper</span>, <span class="mono">print</span>, and <span class="mono">nuke</span>.</li>
           <li><strong style="color:var(--text)">operational guardrails:</strong> for cluster creation always provide <span class="mono">--geth-url</span> and <span class="mono">--wallet-key</span>; for check configs only override values that differ between scenarios.</li>
           <li><strong style="color:var(--text)">why metrics are key:</strong> pushgateway + Grafana make regressions visible quickly and help compare behavior across PR runs.</li>
         </ul>
