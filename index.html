@@ -232,6 +232,7 @@
   <section class="slide active">
     <div class="content">
       <h1>beekeeper</h1>
+      <p class="subtitle">beekeeper is the control tower for Bee test clusters. It creates clusters and runs health checks so we can quickly see if the network is working.</p>
       <div class="stats">
         <div class="stat"><div class="n">12</div><div class="l">cli command groups</div></div>
         <div class="stat"><div class="n">30</div><div class="l">implemented check types</div></div>
@@ -356,8 +357,34 @@
   </section>
 
   <section class="slide centered">
+    <div class="content">
+      <h2>5) how we use beekeeper day to day</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>where it runs</h3>
+          <ul>
+            <li><strong style="color:var(--text)">local dev:</strong> with beelocal environments (k3d/k3s style local clusters) for quick iteration.</li>
+            <li><strong style="color:var(--text)">ci:</strong> Bee PR workflows run beekeeper checks to catch regressions before merge.</li>
+            <li><strong style="color:var(--text)">shared k8s clusters:</strong> used across environments like mainnet/public-testnet and bee-light-testnet dev clusters.</li>
+            <li><strong style="color:var(--text)">namespace mode:</strong> can target by cluster-name or directly by namespace + label selectors.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>how it is operated</h3>
+          <ul>
+            <li><strong style="color:var(--text)">interactive runs:</strong> operators trigger one-off checks and restarts from CLI.</li>
+            <li><strong style="color:var(--text)">job mode:</strong> deploy beekeeper as a Kubernetes job for single-run checks.</li>
+            <li><strong style="color:var(--text)">periodic mode:</strong> run as cronjob / periodic command execution for recurring validations and funding checks.</li>
+            <li><strong style="color:var(--text)">observability loop:</strong> send metrics to pushgateway and inspect results in Grafana dashboards.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide centered">
     <div class="content centered">
-      <h2>5) metrics and dashboard visibility</h2>
+      <h2>6) metrics and dashboard visibility</h2>
       <div class="grid-2">
         <div class="card">
           <h3>what metrics path exists in code</h3>
@@ -381,7 +408,7 @@
 
   <section class="slide centered">
     <div class="content">
-      <h2>6) takeaway</h2>
+      <h2>7) takeaway</h2>
       <div class="card">
         <ul>
           <li><strong style="color:var(--text)">what it is:</strong> beekeeper is the operations cockpit for Bee test clusters, combining lifecycle actions and validation checks in one toolchain.</li>
@@ -397,7 +424,7 @@
   <div class="progress"><div id="progress-bar"></div></div>
   <div class="nav">
     <button id="prev" class="btn" onclick="move(-1)">prev</button>
-    <div id="counter" class="counter">1 / 7</div>
+    <div id="counter" class="counter">1 / 8</div>
     <button id="next" class="btn" onclick="move(1)">next</button>
   </div>
 
