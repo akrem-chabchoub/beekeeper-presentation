@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>beekeeper codebase presentation</title>
+<style>
+  :root {
+    --bg: #121220;
+    --panel: #1d1f34;
+    --panel-2: #252947;
+    --text: #f1f2f7;
+    --muted: #a6adc6;
+    --accent: #f7941d;
+    --accent-2: #dd8800;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --blue: #60a5fa;
+    --border: #343a57;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 110%;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 56px 72px 92px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateX(24px);
+    transition: 260ms ease;
+    pointer-events: none;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #2f2647 0%, var(--bg) 58%),
+      radial-gradient(900px 400px at 95% 0%, rgba(247, 148, 29, 0.1) 0%, transparent 60%);
+  }
+  .slide.centered {
+    padding-top: 200px;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .content {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .content.centered {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: var(--accent);
+  }
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 18px;
+    color: var(--text);
+    text-shadow: 0 0 16px rgba(247, 148, 29, 0.12);
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 1.2rem;
+    margin-bottom: 28px;
+  }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .stat {
+    background: linear-gradient(160deg, #232742 0%, var(--panel) 75%);
+    border: 1px solid rgba(247, 148, 29, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    width: 250px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  }
+  .stat .n {
+    font-size: 2rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .stat .l {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .card {
+    background: linear-gradient(160deg, #232742 0%, var(--panel) 70%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+  }
+  .card h3 {
+    margin-bottom: 10px;
+    font-size: 1.08rem;
+    color: var(--accent);
+  }
+  .card ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .card ul li {
+    background: linear-gradient(150deg, #2a2f52 0%, var(--panel-2) 75%);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  .point-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .point {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  ul {
+    padding-left: 20px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  li { margin-bottom: 6px; }
+  .mono {
+    font-family: Menlo, Consolas, Monaco, monospace;
+    background: #121523;
+    border: 1px solid #2a3047;
+    border-radius: 6px;
+    padding: 2px 7px;
+    color: var(--blue);
+    font-size: 0.9rem;
+  }
+  .flow {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .step {
+    padding: 12px 14px;
+    border: 1px solid rgba(247, 148, 29, 0.18);
+    border-radius: 8px;
+    background: linear-gradient(150deg, #2a2f52 0%, var(--panel-2) 75%);
+  }
+  .step strong { color: var(--accent); }
+  .small {
+    color: var(--muted);
+    margin-top: 16px;
+    font-size: 0.95rem;
+  }
+  .good { color: var(--ok); }
+  .warn { color: var(--warn); }
+  .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10, 12, 20, 0.92);
+    border-top: 1px solid #2b3147;
+  }
+  .btn {
+    border: 1px solid rgba(247, 148, 29, 0.35);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .counter {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .progress {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 48px;
+    height: 3px;
+    background: #1a1f2f;
+  }
+  .progress > div {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    width: 0;
+    transition: width 220ms ease;
+  }
+  @media (max-width: 980px) {
+    .slide { padding: 32px 24px 88px; }
+    .grid-2 { grid-template-columns: 1fr; }
+    h1 { font-size: 2.3rem; }
+  }
+</style>
+</head>
+<body>
+  <section class="slide active">
+    <div class="content">
+      <h1>beekeeper</h1>
+      <div class="stats">
+        <div class="stat"><div class="n">12</div><div class="l">cli command groups</div></div>
+        <div class="stat"><div class="n">30</div><div class="l">implemented check types</div></div>
+        <div class="stat"><div class="n">k8s</div><div class="l">cluster orchestration backend</div></div>
+        <div class="stat"><div class="n">metrics</div><div class="l">prometheus push + grafana dashboards</div></div>
+      </div>
+      <div class="grid-2" style="margin-top:18px;">
+        <div class="card">
+          <h3>top things beekeeper can do</h3>
+          <div class="point-grid">
+            <div class="point">Create and delete Bee clusters from config profiles.</div>
+            <div class="point">Run multiple check types for connectivity, sync, retrieval, postage, settlements, and stake/withdraw flows.</div>
+            <div class="point">Operate nodes with restart, nuke, print, and node-operator workflows.</div>
+            <div class="point">Export check telemetry to Prometheus pushgateway and visualize in Grafana.</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>where this comes from</h3>
+          <div class="point-grid">
+            <div class="point">Main command wiring in <span class="mono">cmd/beekeeper/cmd</span>.</div>
+            <div class="point">Cluster lifecycle in <span class="mono">cmd/beekeeper/cmd/cluster.go</span>.</div>
+            <div class="point">Check registry in <span class="mono">pkg/config/check.go</span>.</div>
+            <div class="point">Check execution engine in <span class="mono">pkg/check/runner.go</span>.</div>
+            <div class="point">K8s orchestration implementation in <span class="mono">pkg/orchestration/k8s</span>.</div>
+          </div>
+        </div>
+      </div>
+      <p class="small">Main binary: <span class="mono">cmd/beekeeper/cmd</span> with create/delete/check/fund/operator/stamper/restart/print/nuke/version and node-funder commands.</p>
+    </div>
+  </section>
+
+  <section class="slide centered">
+    <div class="content">
+      <h2>1) command entry and config loading</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>startup path</h3>
+          <ul>
+            <li>Root command <span class="mono">beekeeper</span> initializes all subcommands.</li>
+            <li>Persistent pre-run calls config init before command execution.</li>
+            <li>Global flags include kube, tracing, loki, geth RPC, config source.</li>
+            <li>Optional periodic execution wrapper for continuous operations.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>example full command</h3>
+          <ul>
+            <li>Use this to create an autotls local cluster with verbose logs:</li>
+            <li><span class="mono">./dist/beekeeper create bee-cluster --cluster-name=local-dns-autotls --log-verbosity=debug</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide centered">
+    <div class="content">
+      <h2>2) cluster setup lifecycle</h2>
+      <div class="flow">
+        <div class="step"><strong>step 1:</strong> validate cluster name and config profile lookup.</div>
+        <div class="step"><strong>step 2:</strong> if starting a new cluster, require <span class="mono">--geth-url</span> and <span class="mono">--wallet-key</span>.</div>
+        <div class="step"><strong>step 3:</strong> setup bootnode groups first, gather addresses, then fund them.</div>
+        <div class="step"><strong>step 4:</strong> setup remaining node groups (supports static endpoints or deploy/add).</div>
+        <div class="step"><strong>step 5:</strong> fund non-bootnode addresses and complete setup.</div>
+      </div>
+      <p class="small">Implementation: goroutine fan-out per node setup, channel aggregation for errors and ETH addresses.</p>
+    </div>
+  </section>
+
+  <section class="slide centered">
+    <div class="content">
+      <h2>3) top commands you will use most</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>daily operations commands</h3>
+          <ul>
+            <li><span class="mono">create bee-cluster</span>: start cluster from config profile.</li>
+            <li><span class="mono">delete bee-cluster</span>: remove cluster resources.</li>
+            <li><span class="mono">restart</span>: restart selected nodes safely.</li>
+            <li><span class="mono">nuke</span>: clean up network state when needed.</li>
+            <li><span class="mono">print</span>: inspect cluster/node information quickly.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>funding and verification commands</h3>
+          <ul>
+            <li><span class="mono">fund</span>: fund cluster wallets for ETH/BZZ needs.</li>
+            <li><span class="mono">node-funder</span>: periodic top-up by address/namespace/cluster.</li>
+            <li><span class="mono">stamper</span>: create/topup/dilute/set postage batches.</li>
+            <li><span class="mono">check</span>: run integration checks on cluster behavior.</li>
+            <li><span class="mono">node-operator</span>: operational node actions in k8s.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="small">These are wired in <span class="mono">cmd/beekeeper/cmd</span> and share global flags (k8s, tracing, metrics, geth RPC, config source).</p>
+    </div>
+  </section>
+
+  <section class="slide centered">
+    <div class="content">
+      <h2>4) bee ci workflow when a PR is open</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>how it works in practice</h3>
+          <ul>
+            <li>For Bee PRs, CI runs workflows that include beekeeper-based integration checks.</li>
+            <li>A common path is the Bee workflow file <span class="mono">.github/workflows/beekeeper.yml</span>.</li>
+            <li>Checks validate cluster behavior (connectivity/retrieval/autotls and related paths).</li>
+            <li>On failures, workflow can collect debug artifacts for investigation.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>example</h3>
+          <ul>
+            <li>PR <a href="https://github.com/ethersphere/bee/pull/5350" target="_blank" style="color:#8bc7ff;">ethersphere/bee#5350</a> adds AutoTLS integration coverage in beekeeper workflow.</li>
+            <li>It extends CI flow with a dedicated AutoTLS cluster test path and artifact handling.</li>
+            <li>Use this as a model when explaining why a beekeeper check change matters for Bee CI.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide centered">
+    <div class="content centered">
+      <h2>5) metrics and dashboard visibility</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>what metrics path exists in code</h3>
+          <ul>
+            <li><span class="mono">check</span> command can enable metrics and push to pushgateway.</li>
+            <li>Check actions and logger can register collectors through metrics middleware.</li>
+            <li>This gives run-level visibility for failures, durations, and behavior over time.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>grafana example</h3>
+          <ul>
+            <li>Smoke check performance dashboard for beekeeper runs:</li>
+            <li><a href="https://grafana.proxy.ethswarm.org/d/smoke-check-perf/beekeeper-smoke-check-performance?var-interval=$__auto&amp;orgId=1&amp;from=now-3d&amp;to=now&amp;timezone=browser&amp;var-datasource=default&amp;var-cluster=swarm1&amp;var-job=bee-light-testnet&amp;var-size=$__all&amp;var-redundancy=$__all" target="_blank" style="color:#8bc7ff;">beekeeper smoke check performance</a></li>
+            <li>Use it to spot regressions quickly after PR checks.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide centered">
+    <div class="content">
+      <h2>6) takeaway</h2>
+      <div class="card">
+        <ul>
+          <li><strong style="color:var(--text)">what it is:</strong> beekeeper is the operations cockpit for Bee test clusters, combining lifecycle actions and validation checks in one toolchain.</li>
+          <li><strong style="color:var(--text)">most important flow:</strong> choose config source (local or git), create or attach to cluster, run checks, and read outcomes in CI + metrics dashboards.</li>
+          <li><strong style="color:var(--text)">commands that matter most:</strong> <span class="mono">check</span>, <span class="mono">restart</span>, <span class="mono">fund</span>, <span class="mono">node-funder</span>, <span class="mono">stamper</span>, <span class="mono">print</span>, and <span class="mono">nuke</span>.</li>
+          <li><strong style="color:var(--text)">operational guardrails:</strong> for cluster creation always provide <span class="mono">--geth-url</span> and <span class="mono">--wallet-key</span>; for check configs only override values that differ between scenarios.</li>
+          <li><strong style="color:var(--text)">why metrics are key:</strong> pushgateway + Grafana make regressions visible quickly and help compare behavior across PR runs.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="progress"><div id="progress-bar"></div></div>
+  <div class="nav">
+    <button id="prev" class="btn" onclick="move(-1)">prev</button>
+    <div id="counter" class="counter">1 / 7</div>
+    <button id="next" class="btn" onclick="move(1)">next</button>
+  </div>
+
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const total = slides.length;
+  let i = 0;
+
+  function render(next) {
+    if (next < 0 || next >= total) return;
+    slides[i].classList.remove("active");
+    i = next;
+    slides[i].classList.add("active");
+    document.getElementById("counter").textContent = `${i + 1} / ${total}`;
+    document.getElementById("prev").disabled = i === 0;
+    document.getElementById("next").disabled = i === total - 1;
+    document.getElementById("progress-bar").style.width = `${((i + 1) / total) * 100}%`;
+  }
+
+  window.move = (d) => render(i + d);
+
+  document.addEventListener("keydown", (e) => {
+    if (["ArrowRight", "ArrowDown", " "].includes(e.key)) {
+      e.preventDefault();
+      render(i + 1);
+    }
+    if (["ArrowLeft", "ArrowUp"].includes(e.key)) {
+      e.preventDefault();
+      render(i - 1);
+    }
+    if (e.key === "Home") {
+      e.preventDefault();
+      render(0);
+    }
+    if (e.key === "End") {
+      e.preventDefault();
+      render(total - 1);
+    }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  document.addEventListener("touchend", (e) => {
+    const dx = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(dx) > 45) render(i + (dx > 0 ? 1 : -1));
+  });
+
+  render(0);
+})();
+</script>
+</body>
+</html>
